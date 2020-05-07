@@ -1,16 +1,17 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { VueLoaderPlugin } = require('vue-loader')
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/index',
   // output是一个对象
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js'
   },
   resolve: {
-    // 先尝试 ts 后缀的 TypeScript 源码文件
-    extensions: ['.ts', '.js']
+    // 先尝试 ts，tsx 后缀的 TypeScript 源码文件
+    extensions: ['.ts', '.tsx', '.js']
   },
   module: {
     rules: [
@@ -35,8 +36,13 @@ module.exports = {
         include: path.resolve(__dirname, 'src')
       },
       {
-        test: /\.ts$/,
+        // 同时匹配 ts，tsx 后缀的 TypeScript 源码文件
+        test: /\.tsx?$/,
         loader: 'awesome-typescript-loader'
+      },
+      {
+        test: /\.vue$/,
+        use: ['vue-loader']
       },
       {
         // 对非文本文件采用 file-loader 加载
@@ -46,7 +52,10 @@ module.exports = {
     ]
   },
   // plugins是一个数组，需要通过构造函数传入参数
-  plugins: [new HtmlWebpackPlugin({ template: './src/index.html' })],
+  plugins: [
+    new HtmlWebpackPlugin({ template: './src/index.html' }),
+    new VueLoaderPlugin()
+  ],
   // mode: 'production',
   mode: 'development'
 }
